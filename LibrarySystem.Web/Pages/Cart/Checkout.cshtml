@@ -1,0 +1,150 @@
+@page
+@model LibrarySystem.Web.Pages.Cart.CheckoutModel
+@{
+    ViewData["Title"] = "Checkout";
+    ViewData["ActivePage"] = "Cart";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1"><i class="bi bi-credit-card me-2 text-primary"></i>Checkout</h2>
+        <p class="text-muted mb-0">Choose how to acquire your books</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.SuccessMessage))
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>@Model.SuccessMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>@Model.ErrorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model.CartItems.Any())
+{
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Items to Checkout</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 80px;">Cover</th>
+                                    <th>Book Details</th>
+                                    <th class="text-center">Price</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.CartItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@item.CoverImageUrl" alt="@item.Title" 
+                                                 class="rounded" style="width: 60px; height: 80px; object-fit: cover;">
+                                        </td>
+                                        <td>
+                                            <h6 class="mb-1">@item.Title</h6>
+                                            <small class="text-muted">by @item.Author</small><br>
+                                            <span class="badge bg-secondary mt-1">@item.Genre</span>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <span class="h6 text-primary mb-0">$@item.Price.ToString("F2")</span>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div class="btn-group" role="group">
+                                                <form method="post" asp-page-handler="Buy" class="d-inline">
+                                                    <input type="hidden" name="bookId" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-success btn-sm" title="Purchase this book">
+                                                        <i class="bi bi-cart-check"></i> Buy
+                                                    </button>
+                                                </form>
+                                                <form method="post" asp-page-handler="Borrow" class="d-inline ms-1">
+                                                    <input type="hidden" name="bookId" value="@item.Id" />
+                                                    <button type="submit" class="btn btn-primary btn-sm" title="Borrow this book for 14 days">
+                                                        <i class="bi bi-book"></i> Borrow
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-info" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong>Note:</strong> 
+                <ul class="mb-0 mt-2">
+                    <li><strong>Buy:</strong> Purchase the book permanently - full price charged</li>
+                    <li><strong>Borrow:</strong> Borrow the book for 14 days - same price as buying</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Items in cart</span>
+                        <span>@Model.CartItems.Count()</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Value</span>
+                        <span>$@Model.TotalPrice.ToString("F2")</span>
+                    </div>
+                    <hr>
+                    <p class="text-muted small mb-3">
+                        <i class="bi bi-lightbulb me-1"></i>
+                        Process each book individually by clicking Buy or Borrow
+                    </p>
+                    <a href="/Cart" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Cart
+                    </a>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mt-3">
+                <div class="card-body">
+                    <h6 class="mb-3"><i class="bi bi-shield-check me-2 text-success"></i>Secure Checkout</h6>
+                    <ul class="list-unstyled small text-muted mb-0">
+                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Instant access to purchased books</li>
+                        <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>14-day borrowing period</li>
+                        <li><i class="bi bi-check-circle text-success me-2"></i>Easy returns and support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm border-0">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-cart-x display-1 text-muted mb-3"></i>
+            <h3>No items to checkout</h3>
+            <p class="text-muted mb-4">Your cart is empty. Add some books first!</p>
+            <a href="/Dashboard" class="btn btn-primary">
+                <i class="bi bi-book me-2"></i>Browse Books
+            </a>
+        </div>
+    </div>
+}

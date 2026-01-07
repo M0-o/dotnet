@@ -1,0 +1,129 @@
+@page
+@model LibrarySystem.Web.Pages.Cart.IndexModel
+@{
+    ViewData["Title"] = "Shopping Cart";
+    ViewData["ActivePage"] = "Cart";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1"><i class="bi bi-cart-fill me-2 text-primary"></i>Shopping Cart</h2>
+        <p class="text-muted mb-0">Review items in your cart</p>
+    </div>
+    @if (Model.CartItems.Any())
+    {
+        <span class="badge bg-primary fs-6">
+            <i class="bi bi-cart me-1"></i>@Model.CartItems.Count() Items
+        </span>
+    }
+</div>
+
+@if (Model.CartItems.Any())
+{
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Cart Items</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 100px;">Cover</th>
+                                    <th>Book Details</th>
+                                    <th class="text-center">Price</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.CartItems)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@item.CoverImageUrl" alt="@item.Title" 
+                                                 class="rounded" style="width: 70px; height: 90px; object-fit: cover;">
+                                        </td>
+                                        <td>
+                                            <h6 class="mb-1">@item.Title</h6>
+                                            <small class="text-muted">by @item.Author</small><br>
+                                            <span class="badge bg-secondary mt-1">@item.Genre</span>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <span class="h5 text-primary mb-0">$@item.Price.ToString("F2")</span>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <form method="post" asp-page-handler="Remove">
+                                                <input type="hidden" name="bookId" value="@item.Id" />
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                    <i class="bi bi-trash"></i> Remove
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal (@Model.CartItems.Count() items)</span>
+                        <span>$@Model.TotalPrice.ToString("F2")</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping</span>
+                        <span class="text-success">Free</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax</span>
+                        <span>$0.00</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total</strong>
+                        <strong class="text-primary fs-4">$@Model.TotalPrice.ToString("F2")</strong>
+                    </div>
+                    <a href="/Cart/Checkout" class="btn btn-primary w-100 mb-2">
+                        <i class="bi bi-credit-card me-2"></i>Proceed to Checkout
+                    </a>
+                    <small class="text-muted d-block text-center">
+                        <i class="bi bi-shield-check me-1"></i>Choose to buy or borrow
+                    </small>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mt-3">
+                <div class="card-body text-center">
+                    <form method="post" asp-page-handler="Clear">
+                        <button type="submit" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-trash3 me-2"></i>Clear Cart
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm border-0">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-cart-x display-1 text-muted mb-3"></i>
+            <h3>Your cart is empty</h3>
+            <p class="text-muted mb-4">Looks like you haven't added any books yet.</p>
+            <a href="/Dashboard" class="btn btn-primary">
+                <i class="bi bi-book me-2"></i>Browse Books
+            </a>
+        </div>
+    </div>
+}
