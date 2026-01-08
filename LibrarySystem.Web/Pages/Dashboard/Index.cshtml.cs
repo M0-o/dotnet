@@ -51,9 +51,10 @@ public class IndexModel : PageModel
             return RedirectToPage("/Login");
         }
 
-        _cartService.AddToCart(userId.Value, bookId);
+        bool added = _cartService.AddToCart(userId.Value, bookId);
         
-        TempData["Message"] = "Book added to cart!";
+        TempData["Message"] = added ? "Book added to cart!" : "Book is already in the cart.";
+        TempData["AlertType"] = added ? "alert-success" : "alert-danger";
         return RedirectToPage();
     }
 }

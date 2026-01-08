@@ -23,7 +23,7 @@ public class CartService : ICartService
             .ToList();
     }
 
-    public void AddToCart(int userId, int bookId)
+    public bool AddToCart(int userId, int bookId)
     {
         var existingItem = _context.CartItems
             .FirstOrDefault(c => c.UserId == userId && c.BookId == bookId);
@@ -37,7 +37,9 @@ public class CartService : ICartService
                 AddedAt = DateTime.UtcNow
             });
             _context.SaveChanges();
+            return true;
         }
+        return false;
     }
 
     public void RemoveFromCart(int userId, int bookId)
